@@ -3,7 +3,6 @@ package initializers
 import (
 	"os"
 
-	"github.com/madbull12/gin_postgres/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -11,11 +10,14 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	db, err := gorm.Open(postgres.Open(os.Getenv("DB")), &gorm.Config{})
+	var err error
+	DB, err = gorm.Open(postgres.Open(os.Getenv("DB")), &gorm.Config{})
+	// DB, err := gorm.Open(postgres.Open(os.Getenv("DB")), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&models.User{})
-	DB = db
+	if err != nil {
+		panic("Failed to connect to ddb")
+	}
 
 }
