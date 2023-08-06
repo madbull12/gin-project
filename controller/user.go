@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/madbull12/gin_postgres/initializers"
 	"github.com/madbull12/gin_postgres/models"
 	"golang.org/x/crypto/bcrypt"
@@ -16,12 +16,7 @@ import (
 func Signup(c *gin.Context) {
 	v := validator.New()
 
-	var body struct {
-		Name     string
-		Email    string
-		Password string
-	}
-
+	var body models.User
 	if c.Bind(v.Struct(&body)) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body ",
@@ -90,8 +85,8 @@ func Signin(c *gin.Context) {
 
 	var user models.User
 	// initializers.DB.First(&user, "email = ?", body.Email)
-	initializers.DB.Where("email = ?", body.Email).First(&user)
-	if user.ID == 0 {
+	result := initializers.DB.Where("email = ?", body.Email).First(&user)
+	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid email or password 3",
 		})
